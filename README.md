@@ -24,14 +24,14 @@
 ## ✨ Features
 
 ### 🎯 **Dual Behavior Modes**
-- **🔄 REVEAL**: Persistent action buttons that stay open for multiple interactions
-- **⚡ DISMISS**: Quick swipe-to-action that automatically snaps back
+- **REVEAL**: Persistent action buttons that stay open for multiple interactions
+- **DISMISS**: Quick swipe-to-action that automatically snaps back
 
 ### 🌍 **True Multiplatform**
-- 📱 **Android** - Native touch gestures
-- 🍎 **iOS** - Smooth iOS-style interactions
-- 🖥️ **Desktop** - Mouse and keyboard support
-- 🌐 **Web (WASM)** - Pure Kotlin, no JavaScript
+- **Android** - Native touch gestures
+- **iOS** - Smooth iOS-style interactions
+- **Desktop** - Mouse and keyboard support
+- **Web (WASM)** - Pure Kotlin, no JavaScript
 
 ### 🎨 **Rich Customization**
 - **15+ Built-in Animations** - From subtle fades to quantum effects
@@ -42,7 +42,7 @@
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -81,7 +81,7 @@ Swipeable(
 
 ### Behavior Modes
 
-#### 🔄 REVEAL Mode
+#### REVEAL Mode
 Perfect for multiple actions - swipe to reveal persistent action buttons.
 
 ```kotlin
@@ -95,7 +95,7 @@ Swipeable(
 ) { /* content */ }
 ```
 
-#### ⚡ DISMISS Mode  
+#### DISMISS Mode  
 Great for quick actions - swipe to trigger and automatically return.
 
 ```kotlin
@@ -113,7 +113,7 @@ Swipeable(
 
 ### Advanced Customization
 
-#### 🎨 Custom Animations
+#### Custom Animations
 
 ```kotlin
 Swipeable(
@@ -128,7 +128,7 @@ Swipeable(
 ) { /* content */ }
 ```
 
-#### 📊 Real-time Progress Tracking
+#### Real-time Progress Tracking
 
 ```kotlin
 var swipeProgress by remember { mutableStateOf(0f) }
@@ -151,7 +151,7 @@ Swipeable(
 }
 ```
 
-#### 🎯 Fine-tuned Control
+#### Fine-tuned Control
 
 ```kotlin
 Swipeable(
@@ -166,7 +166,7 @@ Swipeable(
 
 ---
 
-## 🎭 Animation Showcase
+## Animation Showcase
 
 ### Built-in Animation Styles
 
@@ -203,7 +203,7 @@ val customAnimation = ActionAnimationConfig.custom(
 
 ---
 
-## 🔧 API Reference
+## API Reference
 
 ### Core Components
 
@@ -240,7 +240,7 @@ SwipeAction(
 
 ---
 
-## 🎨 Theming & Styling
+## Theming & Styling
 
 ### Material Design Integration
 
@@ -282,120 +282,7 @@ object SwipeTheme {
 
 ---
 
-## 📱 Platform-Specific Features
-
-### Android
-- Native touch feedback
-- Material Design components
-- Edge-to-edge support
-
-### iOS  
-- iOS-style momentum scrolling
-- Native haptic feedback
-- SwiftUI interoperability
-
-### Desktop
-- Mouse drag support
-- Keyboard shortcuts
-- Window-aware gestures
-
-### Web (WASM)
-- Touch and mouse support
-- Pure Kotlin implementation
-- Progressive Web App ready
-
----
-
-## 🧪 Testing
-
-### Unit Tests
-```kotlin
-@Test
-fun testSwipeThreshold() {
-    // Test threshold calculations
-}
-
-@Test  
-fun testAnimationConfig() {
-    // Test animation configurations
-}
-```
-
-### UI Tests
-```kotlin
-@Test
-fun testSwipeGesture() {
-    composeTestRule.setContent {
-        Swipeable(/* test configuration */) {
-            Text("Test Content")
-        }
-    }
-    
-    // Perform swipe gesture
-    composeTestRule.onNodeWithText("Test Content")
-        .performTouchInput { swipeRight() }
-}
-```
-
----
-
-## 🎯 Examples
-
-Check out the `/composeApp` module for complete examples:
-
-- **Basic Implementation** - Simple swipe actions
-- **Advanced Customization** - Complex animations and theming  
-- **Real-world Use Cases** - Email client, todo app, social media
-- **Platform Demos** - Android, iOS, Desktop, Web
-
-### Run Examples
-
-```bash
-# Android
-./gradlew :composeApp:installDebug
-
-# Desktop  
-./gradlew :composeApp:run
-
-# Web (WASM)
-./gradlew :composeApp:wasmJsBrowserDevelopmentRun
-
-# iOS - Open iosApp in Xcode
-```
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-### Development Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/stevdza-san/Swipeable-KMP.git
-   ```
-
-2. **Open in Android Studio**
-   - Install Kotlin Multiplatform Mobile plugin
-   - Sync project with Gradle files
-
-3. **Run tests**
-   ```bash
-   ./gradlew check
-   ```
-
-### Areas for Contribution
-
-- 🎨 New animation presets
-- 🐛 Bug fixes and improvements
-- 📖 Documentation enhancements
-- 🧪 Additional test coverage
-- 🌍 Accessibility improvements
-
----
-
-## 📄 License
+## License
 
 ```
 MIT License
@@ -420,14 +307,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-
----
-
-## 🙏 Acknowledgments
-
-- **JetBrains** - For Compose Multiplatform
-- **Kotlin Team** - For the amazing language
-- **Community** - For feedback and contributions
 
 ---
 

@@ -56,10 +56,28 @@
 
 ### Installation
 
+#### Option 1: Direct Dependency
 Add to your `commonMain` dependencies:
 
 ```kotlin
 implementation("com.stevdza-san:swipeable-kmp:1.0.0")
+```
+
+#### Option 2: Version Catalog (Recommended)
+Add to your `libs.versions.toml`:
+
+```toml
+[versions]
+swipeableKmp = "1.0.0"
+
+[libraries]
+swipeable-kmp = { module = "com.stevdza-san:swipeable-kmp", version.ref = "swipeableKmp" }
+```
+
+Then in your `commonMain` dependencies:
+
+```kotlin
+implementation(libs.swipeable.kmp)
 ```
 
 ### Basic Usage

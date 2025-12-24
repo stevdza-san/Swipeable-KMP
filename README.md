@@ -182,9 +182,9 @@ Swipeable(
 
 ```kotlin
 // Try different animations
-actionAnimation = ActionAnimationConfig.Quantum
-actionAnimation = ActionAnimationConfig.Pendulum  
-actionAnimation = ActionAnimationConfig.Wave
+Swipeable(actionAnimation = ActionAnimationConfig.Quantum) { /* content */ }
+Swipeable(actionAnimation = ActionAnimationConfig.Pendulum) { /* content */ }  
+Swipeable(actionAnimation = ActionAnimationConfig.Wave) { /* content */ }
 ```
 
 ### Custom Animation Creation

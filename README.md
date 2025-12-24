@@ -19,6 +19,18 @@
 
 </div>
 
+## 🎥 Demo
+
+<div align="center">
+
+![Demo Video](ASSETS/demo.mp4)
+
+Or view it directly: [demo.mp4](ASSETS/demo.mp4)
+
+*Experience the full range of swipe behaviors and animations*
+
+</div>
+
 ---
 
 ## ✨ Features

@@ -21,13 +21,13 @@
 
 ## 🎥 Demo
 
-<div align="center">
+<p align="center">
+<img src="https://github.com/stevdza-san/SwipeableKMP/blob/main/ASSETS/demo.gif?raw=true" width="800"/>
+</p>
 
-![Swipeable KMP Demo](ASSETS/demo.gif)
-
-*Experience the full range of swipe behaviors and animations*
-
-</div>
+<p align="center">
+<em>Experience the full range of swipe behaviors and animations</em>
+</p>
 
 ---
 

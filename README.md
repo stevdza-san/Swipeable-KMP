@@ -22,7 +22,7 @@
 ## 🎥 Demo
 
 <p align="center">
-<img src="https://github.com/stevdza-san/SwipeableKMP/blob/main/ASSETS/demo.gif?raw=true" width="800"/>
+<img src="ASSETS/demo.gif" width="800"/>
 </p>
 
 <p align="center">

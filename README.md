@@ -23,9 +23,10 @@
 
 <div align="center">
 
-![Demo Video](ASSETS/demo.mp4)
-
-Or view it directly: [demo.mp4](ASSETS/demo.mp4)
+<video width="800" controls>
+  <source src="ASSETS/demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 *Experience the full range of swipe behaviors and animations*
 

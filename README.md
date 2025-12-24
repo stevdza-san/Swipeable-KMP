@@ -23,10 +23,7 @@
 
 <div align="center">
 
-<video width="800" controls>
-  <source src="ASSETS/demo.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+![Swipeable KMP Demo](ASSETS/demo.gif)
 
 *Experience the full range of swipe behaviors and animations*
 

@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import com.stevdza_san.swipeable.domain.ActionAnimationConfig
 import com.stevdza_san.swipeable.domain.ActionCustomization
 import com.stevdza_san.swipeable.domain.SwipeAction
+import com.stevdza_san.swipeable.domain.SwipeBackground
 import com.stevdza_san.swipeable.domain.SwipeBehavior
 import com.stevdza_san.swipeable.domain.SwipeDirection
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -78,7 +80,7 @@ fun App() {
                 )
                 
                 Text(
-                    text = "Explore different swipe behaviors and animations",
+                    text = "Explore different swipe behaviors, animations, and gradient backgrounds",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp)
@@ -277,7 +279,12 @@ fun RevealBounceExample() {
                 onAction = { println("Delete action triggered") }
             )
         ),
-        rightContainerColor = MaterialTheme.colorScheme.surfaceVariant
+        rightBackground = SwipeBackground.linearGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+                MaterialTheme.colorScheme.primaryContainer
+            )
+        )
     ) {
         StandardCard(
             title = "Bounce Animation",
@@ -317,8 +324,18 @@ fun DismissWaveExample() {
             ),
             onAction = { println("Delete action triggered") }
         ),
-        leftContainerColor = MaterialTheme.colorScheme.tertiary,
-        rightContainerColor = MaterialTheme.colorScheme.error
+        leftBackground = SwipeBackground.radialGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.tertiary,
+                MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f)
+            )
+        ),
+        rightBackground = SwipeBackground.linearGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.error,
+                MaterialTheme.colorScheme.errorContainer
+            )
+        )
     ) {
         StandardCard(
             title = "Wave Animation",
@@ -365,7 +382,13 @@ fun RevealElasticExample() {
                 onAction = { println("Share action triggered") }
             )
         ),
-        leftContainerColor = MaterialTheme.colorScheme.surfaceVariant
+        leftBackground = SwipeBackground.linearGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.surfaceVariant,
+                MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+            )
+        )
     ) {
         StandardCard(
             title = "Elastic Animation",
@@ -405,8 +428,13 @@ fun DismissPendulumExample() {
             ),
             onAction = { println("Reject action triggered") }
         ),
-        leftContainerColor = MaterialTheme.colorScheme.tertiary,
-        rightContainerColor = MaterialTheme.colorScheme.error
+        leftBackground = SwipeBackground.solid(MaterialTheme.colorScheme.tertiary),
+        rightBackground = SwipeBackground.radialGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.error,
+                MaterialTheme.colorScheme.onError.copy(alpha = 0.1f)
+            )
+        )
     ) {
         StandardCard(
             title = "Pendulum Animation",
@@ -462,8 +490,18 @@ fun RevealCustomExample() {
                 onAction = { println("Archive action triggered") }
             )
         ),
-        leftContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-        rightContainerColor = MaterialTheme.colorScheme.surfaceVariant
+        leftBackground = SwipeBackground.linearGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.surfaceVariant,
+                MaterialTheme.colorScheme.tertiaryContainer
+            )
+        ),
+        rightBackground = SwipeBackground.linearGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.primaryContainer,
+                MaterialTheme.colorScheme.surfaceVariant
+            )
+        )
     ) {
         StandardCard(
             title = "Custom Rotation",
@@ -537,8 +575,20 @@ fun ProgressTrackingExample() {
                 onAction = { println("Delete action triggered") }
             )
         ),
-        leftContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-        rightContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+        leftBackground = SwipeBackground.linearGradient(
+            colors = listOf(
+                Color(0xFF6A5ACD), // SlateBlue
+                Color(0xFF9370DB), // MediumPurple  
+                Color(0xFFBA55D3)  // MediumOrchid
+            )
+        ),
+        rightBackground = SwipeBackground.linearGradient(
+            colors = listOf(
+                Color(0xFFFF6B6B), // Coral Red
+                Color(0xFFFF8E53), // Orange
+                Color(0xFFFF6B9D)  // Pink
+            )
+        ),
         onSwipeProgress = { progress, direction ->
             swipeProgress = progress
             swipeDirection = direction

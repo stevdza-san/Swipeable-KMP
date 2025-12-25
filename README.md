@@ -45,6 +45,7 @@
 
 ### 🎨 **Rich Customization**
 - **15+ Built-in Animations** - From subtle fades to quantum effects
+- **Gradient Backgrounds** - Solid colors, linear gradients, and radial gradients
 - **Flexible Theming** - Colors, shapes, spacing, and more
 - **Smart Thresholds** - Adaptive trigger distances
 - **Real-time Progress** - Custom animation callbacks
@@ -60,7 +61,7 @@
 Add to your `commonMain` dependencies:
 
 ```kotlin
-implementation("com.stevdza-san:swipeable-kmp:1.0.0")
+implementation("com.stevdza-san:swipeable-kmp:1.0.1")
 ```
 
 #### Option 2: Version Catalog (Recommended)
@@ -68,7 +69,7 @@ Add to your `libs.versions.toml`:
 
 ```toml
 [versions]
-swipeableKmp = "1.0.0"
+swipeableKmp = "1.0.1"
 
 [libraries]
 swipeable-kmp = { module = "com.stevdza-san:swipeable-kmp", version.ref = "swipeableKmp" }
@@ -94,6 +95,10 @@ Swipeable(
             ),
             onAction = { /* Delete item */ }
         )
+    ),
+    // Add gradient background
+    rightBackground = SwipeBackground.linearGradient(
+        colors = listOf(Color.Red, Color.Pink)
     )
 ) {
     // Your content here
@@ -179,6 +184,28 @@ Swipeable(
 }
 ```
 
+#### Gradient Backgrounds
+
+Create stunning visual effects with solid colors or gradients:
+
+```kotlin
+Swipeable(
+    // Solid color backgrounds
+    leftBackground = SwipeBackground.solid(Color.Blue),
+    rightBackground = SwipeBackground.solid(Color.Red),
+    
+    // Linear gradient backgrounds  
+    leftBackground = SwipeBackground.linearGradient(
+        colors = listOf(Color.Blue, Color.Cyan, Color.Green)
+    ),
+    
+    // Radial gradient backgrounds
+    rightBackground = SwipeBackground.radialGradient(
+        colors = listOf(Color.Red, Color.Orange, Color.Yellow)
+    )
+) { /* content */ }
+```
+
 #### Fine-tuned Control
 
 ```kotlin
@@ -187,8 +214,10 @@ Swipeable(
     threshold = 0.3f,                      // Trigger at 30% swipe
     maxDragDistance = 200.dp,              // Limit drag distance
     shape = RoundedCornerShape(16.dp),     // Custom shape
-    leftContainerColor = Color.Green,      // Background colors
-    rightContainerColor = Color.Red
+    leftBackground = SwipeBackground.solid(Color.Green),   // Background styling
+    rightBackground = SwipeBackground.linearGradient(
+        colors = listOf(Color.Red, Color.Pink)
+    )
 ) { /* content */ }
 ```
 
@@ -209,10 +238,25 @@ Swipeable(
 | `Wave` | Liquid-like flow | Organic designs |
 
 ```kotlin
-// Try different animations
-Swipeable(actionAnimation = ActionAnimationConfig.Quantum) { /* content */ }
-Swipeable(actionAnimation = ActionAnimationConfig.Pendulum) { /* content */ }  
-Swipeable(actionAnimation = ActionAnimationConfig.Wave) { /* content */ }
+// Try different animations with gradient backgrounds
+Swipeable(
+    actionAnimation = ActionAnimationConfig.Quantum,
+    rightBackground = SwipeBackground.linearGradient(
+        colors = listOf(Color.Magenta, Color.Blue)
+    )
+) { /* content */ }
+
+Swipeable(
+    actionAnimation = ActionAnimationConfig.Pendulum,
+    leftBackground = SwipeBackground.radialGradient(
+        colors = listOf(Color.Green, Color.Yellow)
+    )
+) { /* content */ }  
+
+Swipeable(
+    actionAnimation = ActionAnimationConfig.Wave,
+    rightBackground = SwipeBackground.solid(Color.Red)
+) { /* content */ }
 ```
 
 ### Custom Animation Creation
@@ -244,6 +288,8 @@ The main composable component.
 | `direction` | `SwipeDirection` | `BOTH` | Allowed swipe directions |
 | `threshold` | `Float` | `0.3f` | Trigger threshold (0.0-1.0) |
 | `maxDragDistance` | `Dp` | `200.dp` | Maximum drag distance |
+| `leftBackground` | `SwipeBackground` | `solid(Color.Gray)` | Left side background (solid/gradient) |
+| `rightBackground` | `SwipeBackground` | `solid(Color.Red)` | Right side background (solid/gradient) |
 | `actionAnimation` | `ActionAnimationConfig` | `Default` | Action button animations |
 | `animationSpec` | `AnimationSpec<Float>` | `tween(300)` | Swipe transition animations |
 | `onSwipeProgress` | `((Float, SwipeDirection?) -> Unit)?` | `null` | Real-time progress callback |
@@ -266,6 +312,31 @@ SwipeAction(
 )
 ```
 
+#### `SwipeBackground`
+Configures background styling with solid colors or gradients.
+
+```kotlin
+// Solid color background
+SwipeBackground.solid(Color.Red)
+
+// Linear gradient background
+SwipeBackground.linearGradient(
+    colors = listOf(Color.Blue, Color.Purple, Color.Pink),
+    startX = 0.0f,                          // Start position X
+    startY = 0.0f,                          // Start position Y  
+    endX = Float.POSITIVE_INFINITY,         // End position X
+    endY = 0.0f                            // End position Y
+)
+
+// Radial gradient background  
+SwipeBackground.radialGradient(
+    colors = listOf(Color.Yellow, Color.Orange, Color.Red),
+    centerX = Float.POSITIVE_INFINITY,      // Center position X
+    centerY = Float.POSITIVE_INFINITY,      // Center position Y
+    radius = Float.POSITIVE_INFINITY        // Gradient radius
+)
+```
+
 ---
 
 ## Theming & Styling
@@ -285,7 +356,12 @@ Swipeable(
         )
     ),
     shape = MaterialTheme.shapes.large,
-    rightContainerColor = MaterialTheme.colorScheme.errorContainer
+    rightBackground = SwipeBackground.linearGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.errorContainer,
+            MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+        )
+    )
 ) { /* content */ }
 ```
 
@@ -304,6 +380,15 @@ object SwipeTheme {
         containerColor = Color(0xFF007AFF),
         iconColor = Color.White,
         shape = CircleShape
+    )
+    
+    // Gradient backgrounds
+    val dangerBackground = SwipeBackground.linearGradient(
+        colors = listOf(Color(0xFFFF3B30), Color(0xFFFF6B6B))
+    )
+    
+    val successBackground = SwipeBackground.radialGradient(
+        colors = listOf(Color(0xFF34C759), Color(0xFF30D158), Color(0xFF32D74B))
     )
 }
 ```

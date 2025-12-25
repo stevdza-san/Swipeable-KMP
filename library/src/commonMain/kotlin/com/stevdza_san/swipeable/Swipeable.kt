@@ -37,12 +37,14 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.stevdza_san.swipeable.domain.ActionAnimationConfig
 import com.stevdza_san.swipeable.domain.SwipeAction
+import com.stevdza_san.swipeable.domain.SwipeBackground
 import com.stevdza_san.swipeable.domain.SwipeBehavior
 import com.stevdza_san.swipeable.domain.SwipeDirection
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.abs
 import kotlin.math.roundToInt
+
 
 /**
  * A highly customizable swipeable component that supports both dismiss and reveal behaviors.
@@ -68,8 +70,10 @@ import kotlin.math.roundToInt
  * @param leftDismissAction Single action for left side when behavior = DISMISS and swiping right
  * @param rightDismissAction Single action for right side when behavior = DISMISS and swiping left
  * @param shape Shape applied to both the content and background surfaces
- * @param leftContainerColor Background color for the left swipe surface (behind action buttons)
- * @param rightContainerColor Background color for the right swipe surface (behind action buttons)
+ * @param leftBackground Background configuration for the left swipe surface (behind action buttons).
+ *   Can be solid color or gradient. Use SwipeBackground.solid() or SwipeBackground.linearGradient()/radialGradient()
+ * @param rightBackground Background configuration for the right swipe surface (behind action buttons).
+ *   Can be solid color or gradient. Use SwipeBackground.solid() or SwipeBackground.linearGradient()/radialGradient()
  * @param actionAnimation Animation configuration for action button appearance during swipe (scale, fade, etc.)
  * @param animationSpec Animation specification for swipe transitions (snap back, reveal, dismiss animations).
  *   Use tween() for linear animations, spring() for bouncy effects, or custom AnimationSpec implementations
@@ -90,8 +94,8 @@ fun Swipeable(
     leftDismissAction: SwipeAction? = null,
     rightDismissAction: SwipeAction? = null,
     shape: Shape = RoundedCornerShape(0.dp),
-    leftContainerColor: Color = Color.Gray,
-    rightContainerColor: Color = Color.Red,
+    leftBackground: SwipeBackground = SwipeBackground.solid(Color.Gray),
+    rightBackground: SwipeBackground = SwipeBackground.solid(Color.Red),
     actionAnimation: ActionAnimationConfig = ActionAnimationConfig.Default,
     animationSpec: AnimationSpec<Float> = tween(300),
     onSwipeProgress: ((progress: Float, direction: SwipeDirection?) -> Unit)? = null,
@@ -165,7 +169,7 @@ fun Swipeable(
                                 progress = progress,
                                 alignment = Alignment.CenterStart,
                                 shape = shape,
-                                containerColor = leftContainerColor,
+                                background = leftBackground,
                                 animationConfig = actionAnimation
                             )
                         }
@@ -181,7 +185,7 @@ fun Swipeable(
                             isRevealed = isRevealed && revealedSide == SwipeDirection.LEFT,
                             customSpacing = revealActionSpacing,
                             animationConfig = actionAnimation,
-                            containerColor = leftContainerColor
+                            background = leftBackground
                         )
                     }
                 }
@@ -199,7 +203,7 @@ fun Swipeable(
                                 progress = progress,
                                 alignment = Alignment.CenterEnd,
                                 shape = shape,
-                                containerColor = rightContainerColor,
+                                background = rightBackground,
                                 animationConfig = actionAnimation
                             )
                         }
@@ -215,7 +219,7 @@ fun Swipeable(
                             isRevealed = isRevealed && revealedSide == SwipeDirection.RIGHT,
                             customSpacing = revealActionSpacing,
                             animationConfig = actionAnimation,
-                            containerColor = rightContainerColor
+                            background = rightBackground
                         )
                     }
                 }
@@ -368,19 +372,27 @@ private fun BoxScope.DismissActionContent(
     progress: Float,
     alignment: Alignment,
     shape: Shape,
-    containerColor: Color,
+    background: SwipeBackground,
     animationConfig: ActionAnimationConfig = ActionAnimationConfig.Default,
 ) {
     val containerAlpha = if (animationConfig.enableBackgroundFade) {
         (progress * 1.0f).coerceIn(0f, 1.0f)
     } else 1f
 
-    // Full background color that fills the entire parent component
+    // Full background that fills the entire parent component
     Box(
         modifier = Modifier
             .matchParentSize() // Match the exact size of the parent
             .clip(shape) // Apply the shape (rounded corners) to match the content
-            .background(containerColor.copy(alpha = containerAlpha))
+            .then(
+                when (background) {
+                    is SwipeBackground.Solid -> Modifier.background(background.color.copy(alpha = containerAlpha))
+                    is SwipeBackground.Gradient -> {
+                        // Use the brush as-is for now
+                        Modifier.background(background.brush)
+                    }
+                }
+            )
     ) {
         // Reuse ActionButton for consistent icon rendering and animation
         Box(
@@ -413,7 +425,7 @@ private fun BoxScope.RevealActionsContent(
     shape: Shape,
     isRevealed: Boolean,
     customSpacing: Dp? = null,
-    containerColor: Color,
+    background: SwipeBackground,
     animationConfig: ActionAnimationConfig = ActionAnimationConfig.Default,
 ) {
     val containerAlpha = if (isRevealed) {
@@ -427,7 +439,15 @@ private fun BoxScope.RevealActionsContent(
             modifier = Modifier
                 .matchParentSize()
                 .clip(shape)
-                .background(containerColor.copy(alpha = containerAlpha))
+                .then(
+                    when (background) {
+                        is SwipeBackground.Solid -> Modifier.background(background.color.copy(alpha = containerAlpha))
+                        is SwipeBackground.Gradient -> {
+                            // For gradients, use the brush as-is
+                            Modifier.background(background.brush)
+                        }
+                    }
+                )
         ) {
             // Always show multiple action buttons for reveal behavior
             // The buttons will be fully interactive when isRevealed=true

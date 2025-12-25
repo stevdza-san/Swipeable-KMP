@@ -10,8 +10,6 @@
 ![Web](https://img.shields.io/badge/Web%20(WASM)-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.stevdza-san/swipeable-kmp?style=flat-square)](https://central.sonatype.com/artifact/com.stevdza-san/swipeable-kmp)
-[![License](https://img.shields.io/github/license/stevdza-san/Swipeable-KMP?style=flat-square)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/stevdza-san/Swipeable-KMP?style=flat-square)](https://github.com/stevdza-san/Swipeable-KMP/stargazers)
 
 **A highly customizable, modern swipeable component for Compose Multiplatform**
 

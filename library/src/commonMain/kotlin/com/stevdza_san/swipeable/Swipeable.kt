@@ -118,8 +118,8 @@ fun Swipeable(
         onSwipeProgress?.let { callback ->
             val progress = (abs(offsetX.value) / maxDragDistancePx).coerceIn(0f, 1f)
             val swipeDirection = when {
-                offsetX.value > 0 -> SwipeDirection.LEFT // Swiping right reveals left actions
-                offsetX.value < 0 -> SwipeDirection.RIGHT // Swiping left reveals right actions
+                offsetX.value > 0 -> SwipeDirection.RIGHT
+                offsetX.value < 0 -> SwipeDirection.LEFT
                 else -> null // No swipe
             }
             callback(progress, swipeDirection)

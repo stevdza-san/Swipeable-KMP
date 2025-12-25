@@ -59,7 +59,7 @@
 Add to your `commonMain` dependencies:
 
 ```kotlin
-implementation("com.stevdza-san:swipeable-kmp:1.0.1")
+implementation("com.stevdza-san:swipeable-kmp:1.0.2")
 ```
 
 #### Option 2: Version Catalog (Recommended)
@@ -67,7 +67,7 @@ Add to your `libs.versions.toml`:
 
 ```toml
 [versions]
-swipeableKmp = "1.0.1"
+swipeableKmp = "1.0.2"
 
 [libraries]
 swipeable-kmp = { module = "com.stevdza-san:swipeable-kmp", version.ref = "swipeableKmp" }
@@ -225,15 +225,27 @@ Swipeable(
 
 ### Built-in Animation Styles
 
-| Animation | Description | Best For |
-|-----------|-------------|----------|
-| `Default` | Smooth scale and fade | General use |
-| `Dramatic` | Strong scaling effects | Eye-catching actions |
-| `Quantum` | Glitch-like teleport | Futuristic themes |
-| `Pendulum` | Swinging motion | Playful interactions |
-| `Bounce` | Elastic entrance | Dynamic feedback |
-| `Morph` | Shape transformation | Creative interfaces |
-| `Wave` | Liquid-like flow | Organic designs |
+| Animation        | Description           | Best For            |
+|------------------|-----------------------|---------------------|
+| `Default`        | Scale & fade in       | General UI          |
+| `SlideUp`        | Slide from bottom     | Lists, sheets       |
+| `SlideDown`      | Slide from top        | Toolbars            |
+| `SlideLeft`      | Slide from left       | Navigation          |
+| `SlideRight`     | Slide from right      | Navigation          |
+| `Rotate`         | Rotate with scale     | Attention grab      |
+| `Bounce`         | Elastic pop-in        | Feedback            |
+| `Flip`           | 3D card flip          | Cards               |
+| `Elastic`        | Overshoot scaling     | Playful UI          |
+| `Spring`         | Springy entrance      | Dynamic motion      |
+| `Pendulum`       | Swinging motion       | Playful actions     |
+| `Wave`           | Fluid distortion      | Organic UI          |
+| `Magnetic`       | Pull & snap           | Attraction effects  |
+| `Origami`        | Folding reveal        | Creative UI         |
+| `Materialize`    | Particle assembly     | Magical effects     |
+| `Quantum`        | Glitch teleport       | Futuristic UI       |
+| `Morph`          | Shape morphing        | Creative UI         |
+| `Custom`         | User-defined          | Advanced use        |
+
 
 ```kotlin
 // Try different animations with gradient backgrounds

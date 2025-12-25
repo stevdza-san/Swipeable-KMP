@@ -42,16 +42,6 @@ data class ActionAnimationConfig(
         )
 
         /**
-         * Dramatic animation with strong scaling effects
-         */
-        val Dramatic = ActionAnimationConfig(
-            scaleRange = 0.3f..1.0f,
-            alphaRange = 0.0f..1.0f,
-            enableScale = true,
-            enableFade = true
-        )
-
-        /**
          * Slide in animation from the bottom
          */
         val SlideUp = ActionAnimationConfig(
@@ -59,6 +49,39 @@ data class ActionAnimationConfig(
             enableFade = true,
             customModifier = { progress ->
                 Modifier.offset(y = (50.dp * (1f - progress)))
+            }
+        )
+
+        /**
+         * Slide in animation from the top
+         */
+        val SlideDown = ActionAnimationConfig(
+            enableScale = false,
+            enableFade = true,
+            customModifier = { progress ->
+                Modifier.offset(y = ((-50).dp * (1f - progress)))
+            }
+        )
+
+        /**
+         * Slide in animation from the left
+         */
+        val SlideLeft = ActionAnimationConfig(
+            enableScale = false,
+            enableFade = true,
+            customModifier = { progress ->
+                Modifier.offset(x = ((-50).dp * (1f - progress)))
+            }
+        )
+
+        /**
+         * Slide in animation from the right
+         */
+        val SlideRight = ActionAnimationConfig(
+            enableScale = false,
+            enableFade = true,
+            customModifier = { progress ->
+                Modifier.offset(x = (50.dp * (1f - progress)))
             }
         )
 

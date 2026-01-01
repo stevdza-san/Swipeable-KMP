@@ -65,10 +65,12 @@ import kotlin.math.roundToInt
  *   Examples: 100.dp (compact), 200.dp (default), 300.dp (spacious)
  * @param leftRevealActions List of action buttons for left side when behavior = REVEAL and swiping right
  * @param rightRevealActions List of action buttons for right side when behavior = REVEAL and swiping left
- * @param revealActionSpacing Custom spacing between action buttons in REVEAL mode. If null, spacing is 
+ * @param revealActionsSpacing Custom spacing between action buttons in REVEAL mode. If null, spacing is
  *   auto-calculated based on button sizes (16% of largest button, minimum 6dp)
+ * @param revelActionsHorizontalPadding Horizontal padding around action buttons
  * @param leftDismissAction Single action for left side when behavior = DISMISS and swiping right
  * @param rightDismissAction Single action for right side when behavior = DISMISS and swiping left
+ * @param dismissActionHorizontalPadding Horizontal padding around the action button
  * @param shape Shape applied to both the content and background surfaces
  * @param leftBackground Background configuration for the left swipe surface (behind action buttons).
  *   Can be solid color or gradient. Use SwipeBackground.solid() or SwipeBackground.linearGradient()/radialGradient()
@@ -90,9 +92,11 @@ fun Swipeable(
     maxDragDistance: Dp = 200.dp,
     leftRevealActions: List<SwipeAction> = emptyList(),
     rightRevealActions: List<SwipeAction> = emptyList(),
-    revealActionSpacing: Dp? = null,
+    revealActionsSpacing: Dp? = null,
+    revelActionsHorizontalPadding: Dp = 24.dp,
     leftDismissAction: SwipeAction? = null,
     rightDismissAction: SwipeAction? = null,
+    dismissActionHorizontalPadding: Dp = 24.dp,
     shape: Shape = RoundedCornerShape(0.dp),
     leftBackground: SwipeBackground = SwipeBackground.solid(Color.Gray),
     rightBackground: SwipeBackground = SwipeBackground.solid(Color.Red),
@@ -170,6 +174,7 @@ fun Swipeable(
                                 alignment = Alignment.CenterStart,
                                 shape = shape,
                                 background = leftBackground,
+                                horizontalPadding = dismissActionHorizontalPadding,
                                 animationConfig = actionAnimation
                             )
                         }
@@ -183,8 +188,9 @@ fun Swipeable(
                             alignment = Alignment.CenterStart,
                             shape = shape,
                             isRevealed = isRevealed && revealedSide == SwipeDirection.LEFT,
-                            customSpacing = revealActionSpacing,
+                            customSpacing = revealActionsSpacing,
                             animationConfig = actionAnimation,
+                            horizontalPadding = revelActionsHorizontalPadding,
                             background = leftBackground
                         )
                     }
@@ -204,6 +210,7 @@ fun Swipeable(
                                 alignment = Alignment.CenterEnd,
                                 shape = shape,
                                 background = rightBackground,
+                                horizontalPadding = dismissActionHorizontalPadding,
                                 animationConfig = actionAnimation
                             )
                         }
@@ -217,8 +224,9 @@ fun Swipeable(
                             alignment = Alignment.CenterEnd,
                             shape = shape,
                             isRevealed = isRevealed && revealedSide == SwipeDirection.RIGHT,
-                            customSpacing = revealActionSpacing,
+                            customSpacing = revealActionsSpacing,
                             animationConfig = actionAnimation,
+                            horizontalPadding = revelActionsHorizontalPadding,
                             background = rightBackground
                         )
                     }
@@ -373,6 +381,7 @@ private fun BoxScope.DismissActionContent(
     alignment: Alignment,
     shape: Shape,
     background: SwipeBackground,
+    horizontalPadding: Dp,
     animationConfig: ActionAnimationConfig = ActionAnimationConfig.Default,
 ) {
     val containerAlpha = if (animationConfig.enableBackgroundFade) {
@@ -388,7 +397,6 @@ private fun BoxScope.DismissActionContent(
                 when (background) {
                     is SwipeBackground.Solid -> Modifier.background(background.color.copy(alpha = containerAlpha))
                     is SwipeBackground.Gradient -> {
-                        // Use the brush as-is for now
                         Modifier.background(background.brush)
                     }
                 }
@@ -399,7 +407,7 @@ private fun BoxScope.DismissActionContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(horizontal = 24.dp), // Add padding so icon isn't at the very edge
+                .padding(horizontal = horizontalPadding), // Add padding so icon isn't at the very edge
             contentAlignment = when (alignment) {
                 Alignment.CenterStart -> Alignment.CenterStart
                 Alignment.CenterEnd -> Alignment.CenterEnd
@@ -426,6 +434,7 @@ private fun BoxScope.RevealActionsContent(
     isRevealed: Boolean,
     customSpacing: Dp? = null,
     background: SwipeBackground,
+    horizontalPadding: Dp,
     animationConfig: ActionAnimationConfig = ActionAnimationConfig.Default,
 ) {
     val containerAlpha = if (isRevealed) {
@@ -443,7 +452,6 @@ private fun BoxScope.RevealActionsContent(
                     when (background) {
                         is SwipeBackground.Solid -> Modifier.background(background.color.copy(alpha = containerAlpha))
                         is SwipeBackground.Gradient -> {
-                            // For gradients, use the brush as-is
                             Modifier.background(background.brush)
                         }
                     }
@@ -462,7 +470,7 @@ private fun BoxScope.RevealActionsContent(
                 modifier = Modifier
                     .fillMaxHeight()
                     .align(if (alignment == Alignment.CenterStart) Alignment.CenterStart else Alignment.CenterEnd)
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = horizontalPadding),
                 horizontalArrangement = Arrangement.spacedBy(spacing),
                 verticalAlignment = Alignment.CenterVertically
             ) {

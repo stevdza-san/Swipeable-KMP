@@ -64,9 +64,9 @@ data class ActionAnimationConfig(
         )
 
         /**
-         * Slide in animation from the left
+         * Slide in animation to the right
          */
-        val SlideLeft = ActionAnimationConfig(
+        val SlideRight = ActionAnimationConfig(
             enableScale = false,
             enableFade = true,
             customModifier = { progress ->
@@ -75,9 +75,9 @@ data class ActionAnimationConfig(
         )
 
         /**
-         * Slide in animation from the right
+         * Slide in animation to the left
          */
-        val SlideRight = ActionAnimationConfig(
+        val SlideLeft = ActionAnimationConfig(
             enableScale = false,
             enableFade = true,
             customModifier = { progress ->

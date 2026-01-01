@@ -225,26 +225,26 @@ Swipeable(
 
 ### Built-in Animation Styles
 
-| Animation        | Description           | Best For            |
-|------------------|-----------------------|---------------------|
-| `Default`        | Scale & fade in       | General UI          |
-| `SlideUp`        | Slide from bottom     | Lists, sheets       |
-| `SlideDown`      | Slide from top        | Toolbars            |
-| `SlideLeft`      | Slide from left       | Navigation          |
-| `SlideRight`     | Slide from right      | Navigation          |
-| `Rotate`         | Rotate with scale     | Attention grab      |
-| `Bounce`         | Elastic pop-in        | Feedback            |
-| `Flip`           | 3D card flip          | Cards               |
-| `Elastic`        | Overshoot scaling     | Playful UI          |
-| `Spring`         | Springy entrance      | Dynamic motion      |
-| `Pendulum`       | Swinging motion       | Playful actions     |
-| `Wave`           | Fluid distortion      | Organic UI          |
-| `Magnetic`       | Pull & snap           | Attraction effects  |
-| `Origami`        | Folding reveal        | Creative UI         |
-| `Materialize`    | Particle assembly     | Magical effects     |
-| `Quantum`        | Glitch teleport       | Futuristic UI       |
-| `Morph`          | Shape morphing        | Creative UI         |
-| `Custom`         | User-defined          | Advanced use        |
+| Animation        | Description        | Best For            |
+|------------------|--------------------|---------------------|
+| `Default`        | Scale & fade in    | General UI          |
+| `SlideUp`        | Slide from bottom  | Lists, sheets       |
+| `SlideDown`      | Slide from top     | Toolbars            |
+| `SlideLeft`      | Slide to the left  | Navigation          |
+| `SlideRight`     | Slide to the right | Navigation          |
+| `Rotate`         | Rotate with scale  | Attention grab      |
+| `Bounce`         | Elastic pop-in     | Feedback            |
+| `Flip`           | 3D card flip       | Cards               |
+| `Elastic`        | Overshoot scaling  | Playful UI          |
+| `Spring`         | Springy entrance   | Dynamic motion      |
+| `Pendulum`       | Swinging motion    | Playful actions     |
+| `Wave`           | Fluid distortion   | Organic UI          |
+| `Magnetic`       | Pull & snap        | Attraction effects  |
+| `Origami`        | Folding reveal     | Creative UI         |
+| `Materialize`    | Particle assembly  | Magical effects     |
+| `Quantum`        | Glitch teleport    | Futuristic UI       |
+| `Morph`          | Shape morphing     | Creative UI         |
+| `Custom`         | User-defined       | Advanced use        |
 
 
 ```kotlin

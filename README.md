@@ -45,7 +45,7 @@
 - **15+ Built-in Animations** - From subtle fades to quantum effects
 - **Gradient Backgrounds** - Solid colors, linear gradients, and radial gradients
 - **Flexible Theming** - Colors, shapes, spacing, and more
-- **Smart Thresholds** - Adaptive trigger distances
+- **Intuitive Thresholds** - Single value controls both drag distance and trigger point
 - **Real-time Progress** - Custom animation callbacks
 - **Directional Control** - Left, right, or bidirectional swipes
 
@@ -59,7 +59,7 @@
 Add to your `commonMain` dependencies:
 
 ```kotlin
-implementation("com.stevdza-san:swipeable-kmp:1.0.2")
+implementation("com.stevdza-san:swipeable-kmp:1.0.3")
 ```
 
 #### Option 2: Version Catalog (Recommended)
@@ -67,7 +67,7 @@ Add to your `libs.versions.toml`:
 
 ```toml
 [versions]
-swipeableKmp = "1.0.2"
+swipeableKmp = "1.0.3"
 
 [libraries]
 swipeable-kmp = { module = "com.stevdza-san:swipeable-kmp", version.ref = "swipeableKmp" }
@@ -144,6 +144,29 @@ Swipeable(
 
 ### Advanced Customization
 
+#### Understanding Threshold
+
+The `threshold` parameter controls both the maximum drag distance and when actions trigger:
+
+```kotlin
+Swipeable(
+    threshold = 0.3f  // 30% of screen width
+) { /* content */ }
+```
+
+**How it works:**
+- **Max Drag Distance**: `screenWidth × threshold`
+  - `0.3` = content can drag up to 30% of screen width
+  - `0.5` = content can drag up to 50% of screen width
+- **Trigger Point**: Action triggers when you reach 100% of the max drag distance
+  - Lower thresholds (e.g., `0.2`) = shorter drags, easier to trigger
+  - Higher thresholds (e.g., `0.5`) = longer drags, more effort required
+
+**Examples:**
+- `threshold = 0.2` → Max drag: 20% of screen, triggers at full 20%
+- `threshold = 0.3` → Max drag: 30% of screen, triggers at full 30%
+- `threshold = 0.4` → Max drag: 40% of screen, triggers at full 40%
+
 #### Custom Animations
 
 ```kotlin
@@ -209,8 +232,7 @@ Swipeable(
 ```kotlin
 Swipeable(
     direction = SwipeDirection.RIGHT,      // Only allow right swipes
-    threshold = 0.3f,                      // Trigger at 30% swipe
-    maxDragDistance = 200.dp,              // Limit drag distance
+    threshold = 0.3f,                      // 30% of screen width for both drag distance & trigger
     shape = RoundedCornerShape(16.dp),     // Custom shape
     leftBackground = SwipeBackground.solid(Color.Green),   // Background styling
     rightBackground = SwipeBackground.linearGradient(
@@ -296,8 +318,7 @@ The main composable component.
 |-----------|------|---------|-------------|
 | `behavior` | `SwipeBehavior` | `DISMISS` | Interaction mode (DISMISS/REVEAL) |
 | `direction` | `SwipeDirection` | `BOTH` | Allowed swipe directions |
-| `threshold` | `Float` | `0.3f` | Trigger threshold (0.0-1.0) |
-| `maxDragDistance` | `Dp` | `200.dp` | Maximum drag distance |
+| `threshold` | `Float` | `0.3f` | Controls both max drag distance and trigger point (0.0-1.0). Max drag = screenWidth × threshold. Action triggers at 100% of max drag. |
 | `leftBackground` | `SwipeBackground` | `solid(Color.Gray)` | Left side background (solid/gradient) |
 | `rightBackground` | `SwipeBackground` | `solid(Color.Red)` | Right side background (solid/gradient) |
 | `actionAnimation` | `ActionAnimationConfig` | `Default` | Action button animations |

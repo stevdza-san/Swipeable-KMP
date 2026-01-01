@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.stevdza_san"
-version = "1.0.2" // Semantic versioning for better compatibility
+version = "1.0.3" // Semantic versioning for better compatibility
 
 kotlin {
     jvm("desktop")

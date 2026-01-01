@@ -247,8 +247,7 @@ fun RevealBounceExample() {
         modifier = Modifier.fillMaxWidth(),
         behavior = SwipeBehavior.REVEAL,
         direction = SwipeDirection.RIGHT,
-        threshold = 0.4f,
-        maxDragDistance = 160.dp,
+        threshold = 0.7f,
         shape = RoundedCornerShape(12.dp),
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -299,7 +298,7 @@ fun DismissWaveExample() {
         modifier = Modifier.fillMaxWidth(),
         behavior = SwipeBehavior.DISMISS,
         direction = SwipeDirection.BOTH,
-        threshold = 0.3f,
+        threshold = 0.7f,
         shape = RoundedCornerShape(12.dp),
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioLowBouncy,
@@ -350,8 +349,7 @@ fun RevealElasticExample() {
         modifier = Modifier.fillMaxWidth(),
         behavior = SwipeBehavior.REVEAL,
         direction = SwipeDirection.LEFT,
-        threshold = 0.35f,
-        maxDragDistance = 180.dp,
+        threshold = 0.7f,
         shape = RoundedCornerShape(12.dp),
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -403,7 +401,7 @@ fun DismissPendulumExample() {
         modifier = Modifier.fillMaxWidth(),
         behavior = SwipeBehavior.DISMISS,
         direction = SwipeDirection.BOTH,
-        threshold = 0.25f,
+        threshold = 0.7f,
         shape = RoundedCornerShape(12.dp),
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioNoBouncy,
@@ -449,8 +447,7 @@ fun RevealCustomExample() {
         modifier = Modifier.fillMaxWidth(),
         behavior = SwipeBehavior.REVEAL,
         direction = SwipeDirection.BOTH,
-        threshold = 0.4f,
-        maxDragDistance = 140.dp,
+        threshold = 0.7f,
         shape = RoundedCornerShape(12.dp),
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -519,8 +516,7 @@ fun ProgressTrackingExample() {
         modifier = Modifier.fillMaxWidth(),
         behavior = SwipeBehavior.REVEAL,
         direction = SwipeDirection.BOTH,
-        threshold = 0.4f,
-        maxDragDistance = 200.dp,
+        threshold = 0.7f,
         shape = RoundedCornerShape(12.dp),
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,

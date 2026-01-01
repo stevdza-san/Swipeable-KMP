@@ -20,7 +20,7 @@
 ## 🎥 Demo
 
 <p align="center">
-<img src="ASSETS/demo.gif" width="330"/> <img src="ASSETS/demo2.gif" width="256"/>
+<img src="ASSETS/demo.gif" width="330"/> <img src="ASSETS/demo2.gif" width="330"/>
 </p>
 
 <p align="center">

@@ -432,9 +432,4 @@ object SwipeTheme {
 
 **Made with ❤️ by [Stevdza-San](https://github.com/stevdza-san)**
 
-[📖 Documentation](https://github.com/stevdza-san/Swipeable-KMP/wiki) • 
-[🐛 Report Bug](https://github.com/stevdza-san/Swipeable-KMP/issues) • 
-[💡 Request Feature](https://github.com/stevdza-san/Swipeable-KMP/issues) • 
-[💬 Discussions](https://github.com/stevdza-san/Swipeable-KMP/discussions)
-
 </div>

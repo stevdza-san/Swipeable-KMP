@@ -46,11 +46,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.stevdza_san.swipeable.domain.ActionAnimationConfig
 import com.stevdza_san.swipeable.domain.ActionCustomization
+import com.stevdza_san.swipeable.domain.HapticFeedbackConfig
+import com.stevdza_san.swipeable.domain.HapticFeedbackIntensity
+import com.stevdza_san.swipeable.domain.HapticFeedbackMode
 import com.stevdza_san.swipeable.domain.SwipeAction
 import com.stevdza_san.swipeable.domain.SwipeBackground
 import com.stevdza_san.swipeable.domain.SwipeBehavior
 import com.stevdza_san.swipeable.domain.SwipeDirection
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import swipeablekmp.composeapp.generated.resources.Res
 import swipeablekmp.composeapp.generated.resources.archive
 import swipeablekmp.composeapp.generated.resources.check
@@ -61,11 +63,11 @@ import swipeablekmp.composeapp.generated.resources.share
 
 
 @Composable
-@Preview
 fun App() {
     MaterialTheme {
         Column(
             modifier = Modifier
+                .background(MaterialTheme.colorScheme.surface)
                 .systemBarsPadding()
                 .verticalScroll(rememberScrollState())
                 .padding(20.dp),
@@ -80,7 +82,7 @@ fun App() {
                 )
                 
                 Text(
-                    text = "Explore different swipe behaviors, animations, and gradient backgrounds",
+                    text = "Explore different swipe behaviors, animations, gradient backgrounds, and haptic feedback modes",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp)
@@ -95,7 +97,7 @@ fun App() {
             // Progress Tracking with Dynamic Scaling
             ShowcaseItem(
                 title = "PROGRESS TRACKING • Quantum Animation",
-                description = "External progress tracking with dynamic content scaling and quantum animation effects"
+                description = "External progress tracking with dynamic scaling and continuous light haptic feedback while swiping"
             ) {
                 ProgressTrackingExample()
             }
@@ -103,7 +105,7 @@ fun App() {
             // REVEAL Behavior with Bounce Animation
             ShowcaseItem(
                 title = "REVEAL • Bounce Animation",
-                description = "Swipe right to reveal multiple actions with bounce effect"
+                description = "Swipe right to reveal actions with bounce effect and medium haptic feedback at threshold"
             ) {
                 RevealBounceExample()
             }
@@ -111,7 +113,7 @@ fun App() {
             // DISMISS Behavior with Wave Animation
             ShowcaseItem(
                 title = "DISMISS • Wave Animation", 
-                description = "Swipe left or right to trigger actions with wave effect"
+                description = "Swipe right for light continuous haptic (archive) or left for heavy milestone haptic (delete)"
             ) {
                 DismissWaveExample()
             }
@@ -119,7 +121,7 @@ fun App() {
             // REVEAL Behavior with Elastic Animation
             ShowcaseItem(
                 title = "REVEAL • Elastic Animation",
-                description = "Swipe left to reveal actions with elastic overshoot"
+                description = "Swipe left to reveal actions with elastic overshoot and continuous medium haptic feedback"
             ) {
                 RevealElasticExample()
             }
@@ -127,7 +129,7 @@ fun App() {
             // DISMISS Behavior with Pendulum Animation
             ShowcaseItem(
                 title = "DISMISS • Pendulum Animation",
-                description = "Swipe to trigger actions with pendulum swing effect"
+                description = "Swipe to trigger actions with pendulum swing and strong haptic feedback at threshold"
             ) {
                 DismissPendulumExample()
             }
@@ -135,7 +137,7 @@ fun App() {
             // REVEAL Behavior with Custom Animation
             ShowcaseItem(
                 title = "REVEAL • Custom Rotation",
-                description = "Swipe both ways with custom rotating animation"
+                description = "Swipe right for single medium haptic (share) or left for light progressive haptic (archive)"
             ) {
                 RevealCustomExample()
             }
@@ -254,6 +256,11 @@ fun RevealBounceExample() {
             stiffness = Spring.StiffnessMedium
         ),
         actionAnimation = ActionAnimationConfig.Bounce,
+        hapticFeedbackConfig = HapticFeedbackConfig(
+            enabled = true,
+            mode = HapticFeedbackMode.THRESHOLD_ONCE,
+            intensity = HapticFeedbackIntensity.MEDIUM
+        ),
         rightRevealActions = listOf(
             SwipeAction(
                 label = "Edit",
@@ -305,6 +312,18 @@ fun DismissWaveExample() {
             stiffness = Spring.StiffnessLow
         ),
         actionAnimation = ActionAnimationConfig.Wave,
+        // Light continuous haptic for archive (left/non-destructive)
+        leftHapticFeedbackConfig = HapticFeedbackConfig(
+            enabled = true,
+            mode = HapticFeedbackMode.CONTINUOUS,
+            intensity = HapticFeedbackIntensity.LIGHT
+        ),
+        // Heavy haptic at milestones for delete (right/destructive)
+        rightHapticFeedbackConfig = HapticFeedbackConfig(
+            enabled = true,
+            mode = HapticFeedbackMode.PROGRESS_STEPS,
+            intensity = HapticFeedbackIntensity.HEAVY
+        ),
         leftDismissAction = SwipeAction(
             label = "Archive",
             customization = ActionCustomization(
@@ -356,6 +375,11 @@ fun RevealElasticExample() {
             stiffness = Spring.StiffnessMedium
         ),
         actionAnimation = ActionAnimationConfig.Elastic,
+        hapticFeedbackConfig = HapticFeedbackConfig(
+            enabled = true,
+            mode = HapticFeedbackMode.CONTINUOUS,
+            intensity = HapticFeedbackIntensity.MEDIUM
+        ),
         leftRevealActions = listOf(
             SwipeAction(
                 label = "Heart",
@@ -408,6 +432,11 @@ fun DismissPendulumExample() {
             stiffness = Spring.StiffnessMediumLow
         ),
         actionAnimation = ActionAnimationConfig.Pendulum,
+        hapticFeedbackConfig = HapticFeedbackConfig(
+            enabled = true,
+            mode = HapticFeedbackMode.THRESHOLD_ONCE,
+            intensity = HapticFeedbackIntensity.HEAVY
+        ),
         leftDismissAction = SwipeAction(
             label = "Accept",
             customization = ActionCustomization(
@@ -460,6 +489,18 @@ fun RevealCustomExample() {
             customModifier = { progress ->
                 Modifier.rotate(progress * 360f)
             }
+        ),
+        // Medium haptic at threshold for share (left)
+        leftHapticFeedbackConfig = HapticFeedbackConfig(
+            enabled = true,
+            mode = HapticFeedbackMode.THRESHOLD_ONCE,
+            intensity = HapticFeedbackIntensity.MEDIUM
+        ),
+        // Light progressive haptic for archive (right)
+        rightHapticFeedbackConfig = HapticFeedbackConfig(
+            enabled = true,
+            mode = HapticFeedbackMode.PROGRESS_STEPS,
+            intensity = HapticFeedbackIntensity.LIGHT
         ),
         leftRevealActions = listOf(
             SwipeAction(
@@ -523,6 +564,11 @@ fun ProgressTrackingExample() {
             stiffness = Spring.StiffnessHigh
         ),
         actionAnimation = ActionAnimationConfig.Quantum,
+        hapticFeedbackConfig = HapticFeedbackConfig(
+            enabled = true,
+            mode = HapticFeedbackMode.CONTINUOUS,
+            intensity = HapticFeedbackIntensity.LIGHT
+        ),
         leftRevealActions = listOf(
             SwipeAction(
                 label = "Favorite",

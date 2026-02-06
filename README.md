@@ -44,6 +44,7 @@
 ### 🎨 **Rich Customization**
 - **15+ Built-in Animations** - From subtle fades to quantum effects
 - **Gradient Backgrounds** - Solid colors, linear gradients, and radial gradients
+- **Platform-Native Haptic Feedback** - Three modes, three intensities, directional control
 - **Flexible Theming** - Colors, shapes, spacing, and more
 - **Intuitive Thresholds** - Single value controls both drag distance and trigger point
 - **Real-time Progress** - Custom animation callbacks
@@ -59,7 +60,7 @@
 Add to your `commonMain` dependencies:
 
 ```kotlin
-implementation("com.stevdza-san:swipeable-kmp:1.0.3")
+implementation("com.stevdza-san:swipeable-kmp:1.0.4")
 ```
 
 #### Option 2: Version Catalog (Recommended)
@@ -67,7 +68,7 @@ Add to your `libs.versions.toml`:
 
 ```toml
 [versions]
-swipeableKmp = "1.0.3"
+swipeableKmp = "1.0.4"
 
 [libraries]
 swipeable-kmp = { module = "com.stevdza-san:swipeable-kmp", version.ref = "swipeableKmp" }
@@ -78,6 +79,8 @@ Then in your `commonMain` dependencies:
 ```kotlin
 implementation(libs.swipeable.kmp)
 ```
+
+> **Note**: For haptic feedback on Android, the library automatically adds the `VIBRATE` permission via manifest merger. No additional setup required!
 
 ### Basic Usage
 
@@ -97,7 +100,9 @@ Swipeable(
     // Add gradient background
     rightBackground = SwipeBackground.linearGradient(
         colors = listOf(Color.Red, Color.Pink)
-    )
+    ),
+    // Add haptic feedback
+    hapticFeedbackConfig = HapticFeedbackConfig.Default
 ) {
     // Your content here
     Card { 
@@ -227,6 +232,135 @@ Swipeable(
 ) { /* content */ }
 ```
 
+#### Haptic Feedback
+
+Add tactile feedback to enhance the swipe experience with platform-native haptic effects.
+
+**Platform Support:**
+- ✅ **Android** - Uses `VibrationEffect` API with fallback to legacy `Vibrator` (requires `VIBRATE` permission - auto-added by library)
+- ✅ **iOS** - Uses `UIImpactFeedbackGenerator` with prepared generators for optimal performance
+- ⚪ **Desktop/Web** - No-op (these platforms don't support haptic feedback)
+
+##### Basic Haptic Feedback
+
+```kotlin
+Swipeable(
+    hapticFeedbackConfig = HapticFeedbackConfig.Default,  // Medium haptic at threshold
+    rightDismissAction = SwipeAction(/* ... */)
+) { /* content */ }
+```
+
+##### Haptic Feedback Modes
+
+Three distinct modes control **when** haptic feedback triggers:
+
+```kotlin
+// 1. THRESHOLD_ONCE - Single feedback at threshold (default)
+// Perfect for clear "action ready" indication
+Swipeable(
+    hapticFeedbackConfig = HapticFeedbackConfig(
+        mode = HapticFeedbackMode.THRESHOLD_ONCE,
+        intensity = HapticFeedbackIntensity.MEDIUM
+    )
+) { /* content */ }
+
+// 2. CONTINUOUS - Feedback while swiping
+// Creates immersive tactile experience (throttled to ~5% progress intervals)
+Swipeable(
+    hapticFeedbackConfig = HapticFeedbackConfig(
+        mode = HapticFeedbackMode.CONTINUOUS,
+        intensity = HapticFeedbackIntensity.LIGHT
+    )
+) { /* content */ }
+
+// 3. PROGRESS_STEPS - Feedback at 25%, 50%, 75%, 100%
+// Provides incremental progress indicators
+Swipeable(
+    hapticFeedbackConfig = HapticFeedbackConfig(
+        mode = HapticFeedbackMode.PROGRESS_STEPS,
+        intensity = HapticFeedbackIntensity.HEAVY
+    )
+) { /* content */ }
+```
+
+##### Haptic Intensity Levels
+
+Three intensity levels for different use cases:
+
+| Intensity | Android | iOS | Best For |
+|-----------|---------|-----|----------|
+| `LIGHT` | `TEXT_HANDLE_MOVE` | `UIImpactFeedbackStyleLight` | Subtle, frequent feedback |
+| `MEDIUM` | `CLOCK_TICK` | `UIImpactFeedbackStyleMedium` | Balanced, general use |
+| `HEAVY` | `CONTEXT_CLICK` | `UIImpactFeedbackStyleHeavy` | Destructive actions, warnings |
+
+##### Directional Haptic Feedback
+
+**Customize haptic feedback separately for left and right swipes** - perfect for differentiating between destructive and non-destructive actions:
+
+```kotlin
+Swipeable(
+    // Light continuous feedback for archive (non-destructive)
+    leftHapticFeedbackConfig = HapticFeedbackConfig(
+        mode = HapticFeedbackMode.CONTINUOUS,
+        intensity = HapticFeedbackIntensity.LIGHT
+    ),
+    // Heavy milestone feedback for delete (destructive)
+    rightHapticFeedbackConfig = HapticFeedbackConfig(
+        mode = HapticFeedbackMode.PROGRESS_STEPS,
+        intensity = HapticFeedbackIntensity.HEAVY
+    ),
+    leftDismissAction = SwipeAction(label = "Archive", /* ... */),
+    rightDismissAction = SwipeAction(label = "Delete", /* ... */)
+) { /* content */ }
+```
+
+**Note:** `leftHapticFeedbackConfig` applies when swiping **RIGHT** (revealing left actions), and `rightHapticFeedbackConfig` applies when swiping **LEFT** (revealing right actions).
+
+##### Convenient Presets
+
+```kotlin
+// Predefined configurations for common use cases
+HapticFeedbackConfig.Default         // Threshold once, medium intensity
+HapticFeedbackConfig.Disabled        // No haptic feedback
+HapticFeedbackConfig.Continuous      // Continuous, medium intensity
+HapticFeedbackConfig.ProgressSteps   // Progress steps, medium intensity
+```
+
+##### Real-World Examples
+
+```kotlin
+// Email app - Different feedback for archive vs delete
+Swipeable(
+    leftHapticFeedbackConfig = HapticFeedbackConfig(
+        mode = HapticFeedbackMode.THRESHOLD_ONCE,
+        intensity = HapticFeedbackIntensity.LIGHT
+    ),
+    rightHapticFeedbackConfig = HapticFeedbackConfig(
+        mode = HapticFeedbackMode.THRESHOLD_ONCE,
+        intensity = HapticFeedbackIntensity.HEAVY
+    ),
+    leftDismissAction = SwipeAction(label = "Archive", /* ... */),
+    rightDismissAction = SwipeAction(label = "Delete", /* ... */)
+) { EmailCard() }
+
+// Social media - Continuous feedback for interactive swipe
+Swipeable(
+    hapticFeedbackConfig = HapticFeedbackConfig.Continuous,
+    leftRevealActions = listOf(
+        SwipeAction(label = "Like", /* ... */),
+        SwipeAction(label = "Share", /* ... */)
+    )
+) { PostCard() }
+
+// Settings - No haptic for subtle interactions
+Swipeable(
+    hapticFeedbackConfig = HapticFeedbackConfig.Disabled,
+    rightRevealActions = listOf(
+        SwipeAction(label = "Edit", /* ... */)
+    )
+) { SettingsRow() }
+```
+
 #### Fine-tuned Control
 
 ```kotlin
@@ -323,6 +457,9 @@ The main composable component.
 | `rightBackground` | `SwipeBackground` | `solid(Color.Red)` | Right side background (solid/gradient) |
 | `actionAnimation` | `ActionAnimationConfig` | `Default` | Action button animations |
 | `animationSpec` | `AnimationSpec<Float>` | `tween(300)` | Swipe transition animations |
+| `hapticFeedbackConfig` | `HapticFeedbackConfig` | `Default` | Default haptic feedback for both directions |
+| `leftHapticFeedbackConfig` | `HapticFeedbackConfig?` | `null` | Haptic config for left swipe (overrides default) |
+| `rightHapticFeedbackConfig` | `HapticFeedbackConfig?` | `null` | Haptic config for right swipe (overrides default) |
 | `onSwipeProgress` | `((Float, SwipeDirection?) -> Unit)?` | `null` | Real-time progress callback |
 
 #### `SwipeAction`
@@ -367,6 +504,38 @@ SwipeBackground.radialGradient(
     radius = Float.POSITIVE_INFINITY        // Gradient radius
 )
 ```
+
+#### `HapticFeedbackConfig`
+Configures haptic feedback behavior and intensity.
+
+```kotlin
+HapticFeedbackConfig(
+    enabled = true,                              // Enable/disable haptic feedback
+    mode = HapticFeedbackMode.THRESHOLD_ONCE,    // When to trigger (THRESHOLD_ONCE, CONTINUOUS, PROGRESS_STEPS)
+    intensity = HapticFeedbackIntensity.MEDIUM   // How strong (LIGHT, MEDIUM, HEAVY)
+)
+
+// Convenient presets
+HapticFeedbackConfig.Default        // enabled, THRESHOLD_ONCE, MEDIUM
+HapticFeedbackConfig.Disabled       // disabled
+HapticFeedbackConfig.Continuous     // enabled, CONTINUOUS, MEDIUM
+HapticFeedbackConfig.ProgressSteps  // enabled, PROGRESS_STEPS, MEDIUM
+```
+
+**HapticFeedbackMode Options:**
+- `THRESHOLD_ONCE` - Single feedback when threshold is reached
+- `CONTINUOUS` - Feedback throughout swipe (throttled every ~5% progress)
+- `PROGRESS_STEPS` - Feedback at 25%, 50%, 75%, 100% milestones
+
+**HapticFeedbackIntensity Options:**
+- `LIGHT` - Subtle, frequent interactions
+- `MEDIUM` - Balanced, general purpose
+- `HEAVY` - Destructive actions, important events
+
+**Platform Requirements:**
+- **Android**: `VIBRATE` permission (automatically added by library manifest)
+- **iOS**: No additional setup required
+- **Desktop/Web**: No-op implementations (platforms don't support haptics)
 
 ---
 

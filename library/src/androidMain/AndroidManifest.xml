@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 
+        Required permission for haptic feedback functionality.
+        This permission is automatically merged into the app's manifest when using this library.
+    -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+</manifest>

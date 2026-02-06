@@ -32,11 +32,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.stevdza_san.swipeable.domain.ActionAnimationConfig
+import com.stevdza_san.swipeable.domain.HapticFeedbackConfig
+import com.stevdza_san.swipeable.domain.HapticFeedbackMode
 import com.stevdza_san.swipeable.domain.SwipeAction
 import com.stevdza_san.swipeable.domain.SwipeBackground
 import com.stevdza_san.swipeable.domain.SwipeBehavior
@@ -82,6 +83,12 @@ import kotlin.math.roundToInt
  * @param actionAnimation Animation configuration for action button appearance during swipe (scale, fade, etc.)
  * @param animationSpec Animation specification for swipe transitions (snap back, reveal, dismiss animations).
  *   Use tween() for linear animations, spring() for bouncy effects, or custom AnimationSpec implementations
+ * @param hapticFeedbackConfig Default configuration for haptic feedback during swipe gestures (applies to both directions).
+ *   Can be overridden by leftHapticFeedbackConfig or rightHapticFeedbackConfig for directional control.
+ * @param leftHapticFeedbackConfig Haptic feedback configuration specifically for swiping RIGHT (revealing left actions).
+ *   If null, uses hapticFeedbackConfig. Allows different haptic feedback for left vs right swipes.
+ * @param rightHapticFeedbackConfig Haptic feedback configuration specifically for swiping LEFT (revealing right actions).
+ *   If null, uses hapticFeedbackConfig. Allows different haptic feedback for left vs right swipes.
  * @param onSwipeProgress Callback that provides real-time swipe progress (0.0 to 1.0) and direction
  *   for implementing custom animations and visual effects
  * @param content The main content to be displayed, which can be swiped to reveal actions
@@ -104,17 +111,25 @@ fun Swipeable(
     rightBackground: SwipeBackground = SwipeBackground.solid(Color.Red),
     actionAnimation: ActionAnimationConfig = ActionAnimationConfig.Default,
     animationSpec: AnimationSpec<Float> = tween(300),
+    hapticFeedbackConfig: HapticFeedbackConfig = HapticFeedbackConfig.Default,
+    leftHapticFeedbackConfig: HapticFeedbackConfig? = null,
+    rightHapticFeedbackConfig: HapticFeedbackConfig? = null,
     onSwipeProgress: ((progress: Float, direction: SwipeDirection?) -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    val density = LocalDensity.current
     val coroutineScope = rememberCoroutineScope()
+    val hapticFeedback = rememberHapticFeedback()
 
     // Animation state for the main content offset
     val offsetX = remember { Animatable(0f) }
 
     // Track if an action was triggered
     var actionTriggered by remember { mutableStateOf(false) }
+
+    // Track haptic feedback state based on mode
+    var thresholdHapticTriggered by remember { mutableStateOf(false) }
+    var lastHapticProgress by remember { mutableStateOf(0f) }
+    val progressMilestones = remember { mutableSetOf<Int>() } // Track which milestones (25, 50, 75, 100) have been triggered
 
     // Determine which actions to use based on behavior mode
     val finalLeftActions = when (behavior) {
@@ -247,6 +262,11 @@ fun Swipeable(
                     .pointerInput(Unit) {
                         detectHorizontalDragGestures(
                             onDragEnd = {
+                                // Reset haptic feedback state when drag ends
+                                thresholdHapticTriggered = false
+                                lastHapticProgress = 0f
+                                progressMilestones.clear()
+                                
                                 coroutineScope.launch {
                                     val currentOffset = offsetX.value
 
@@ -341,6 +361,62 @@ fun Swipeable(
 
                                     SwipeDirection.BOTH -> {
                                         offsetX.snapTo(newOffset)
+                                    }
+                                }
+
+                                // Trigger haptic feedback based on configuration
+                                // Determine which haptic config to use based on swipe direction
+                                val activeHapticConfig = when {
+                                    offsetX.value > 0 -> leftHapticFeedbackConfig ?: hapticFeedbackConfig
+                                    offsetX.value < 0 -> rightHapticFeedbackConfig ?: hapticFeedbackConfig
+                                    else -> hapticFeedbackConfig
+                                }
+                                
+                                if (activeHapticConfig.enabled) {
+                                    // Verify there are actions available for the swipe direction
+                                    val hasActions = when {
+                                        offsetX.value > 0 -> finalLeftActions.isNotEmpty()
+                                        offsetX.value < 0 -> finalRightActions.isNotEmpty()
+                                        else -> false
+                                    }
+                                    
+                                    if (hasActions) {
+                                        val currentProgress = (abs(offsetX.value) / maxDragDistancePx).coerceIn(0f, 1f)
+                                        
+                                        when (activeHapticConfig.mode) {
+                                            HapticFeedbackMode.THRESHOLD_ONCE -> {
+                                                // Trigger once when threshold is reached
+                                                if (!thresholdHapticTriggered && currentProgress >= threshold) {
+                                                    hapticFeedback.performHapticFeedback(activeHapticConfig.intensity)
+                                                    thresholdHapticTriggered = true
+                                                }
+                                            }
+                                            
+                                            HapticFeedbackMode.CONTINUOUS -> {
+                                                // Trigger continuously while swiping (throttled by progress change)
+                                                // Only trigger if progress changed by at least 5% to avoid overwhelming
+                                                if (abs(currentProgress - lastHapticProgress) >= 0.05f && currentProgress > 0f) {
+                                                    hapticFeedback.performHapticFeedback(activeHapticConfig.intensity)
+                                                    lastHapticProgress = currentProgress
+                                                }
+                                            }
+                                            
+                                            HapticFeedbackMode.PROGRESS_STEPS -> {
+                                                // Trigger at 25%, 50%, 75%, and 100% of threshold
+                                                val milestone = when {
+                                                    currentProgress >= threshold -> 100
+                                                    currentProgress >= threshold * 0.75f -> 75
+                                                    currentProgress >= threshold * 0.50f -> 50
+                                                    currentProgress >= threshold * 0.25f -> 25
+                                                    else -> 0
+                                                }
+                                                
+                                                if (milestone > 0 && !progressMilestones.contains(milestone)) {
+                                                    hapticFeedback.performHapticFeedback(activeHapticConfig.intensity)
+                                                    progressMilestones.add(milestone)
+                                                }
+                                            }
+                                        }
                                     }
                                 }
 

@@ -1,4 +1,4 @@
-# 🚀 Swipeable KMP
+# Swipeable KMP
 
 <div align="center">
 

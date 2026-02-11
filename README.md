@@ -1,4 +1,4 @@
-# Swipeable KMP
+<h1 align="center">Swipeable KMP</h1>
 
 <div align="center">
 

@@ -60,7 +60,7 @@
 Add to your `commonMain` dependencies:
 
 ```kotlin
-implementation("com.stevdza-san:swipeable-kmp:1.0.4")
+implementation("com.stevdza-san:swipeable-kmp:1.0.5")
 ```
 
 #### Option 2: Version Catalog (Recommended)
@@ -68,7 +68,7 @@ Add to your `libs.versions.toml`:
 
 ```toml
 [versions]
-swipeableKmp = "1.0.4"
+swipeableKmp = "1.0.5"
 
 [libraries]
 swipeable-kmp = { module = "com.stevdza-san:swipeable-kmp", version.ref = "swipeableKmp" }
@@ -476,8 +476,12 @@ SwipeAction(
         padding = 48.dp                    // Button size
     ),
     onAction = { /* Handle action */ },    // Action callback
-    label = "Delete"                       // Accessibility label
+    label = "Delete",                      // Accessibility label
+    autoClose = true                       // Auto-close reveal panel after action click (REVEAL mode only)
 )
+```
+
+> **`autoClose`** *(default: `true`)* — When `true`, the swipe panel automatically animates back to the closed position after the action is tapped. Set to `false` to keep the panel open after `onAction` fires (e.g. for a toggle action where the UI updates in place).
 ```
 
 #### `SwipeBackground`

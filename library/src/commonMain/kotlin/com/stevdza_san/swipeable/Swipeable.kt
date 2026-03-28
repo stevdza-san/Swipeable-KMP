@@ -1,6 +1,5 @@
 package com.stevdza_san.swipeable
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -19,11 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -119,76 +115,38 @@ fun Swipeable(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val hapticFeedback = rememberHapticFeedback()
+    val controller = remember(key1 = coroutineScope) { SwipeController(coroutineScope) }
 
-    // Animation state for the main content offset
-    val offsetX = remember { Animatable(0f) }
-
-    // Track if an action was triggered
-    var actionTriggered by remember { mutableStateOf(false) }
-
-    // Track haptic feedback state based on mode
-    var thresholdHapticTriggered by remember { mutableStateOf(false) }
-    var lastHapticProgress by remember { mutableStateOf(0f) }
-    val progressMilestones = remember { mutableSetOf<Int>() } // Track which milestones (25, 50, 75, 100) have been triggered
-
-    // Determine which actions to use based on behavior mode
-    val finalLeftActions = when (behavior) {
+    // Sync caller-provided params and derived values that may change between recompositions
+    controller.animationSpec = animationSpec
+    controller.onSwipeProgress = onSwipeProgress
+    controller.finalLeftActions = when (behavior) {
         SwipeBehavior.DISMISS -> listOfNotNull(leftDismissAction)
         SwipeBehavior.REVEAL -> leftRevealActions
     }
-    val finalRightActions = when (behavior) {
+    controller.finalRightActions = when (behavior) {
         SwipeBehavior.DISMISS -> listOfNotNull(rightDismissAction)
         SwipeBehavior.REVEAL -> rightRevealActions
     }
 
-    // Track if swipe is currently revealed (for REVEAL behavior)
-    var isRevealed by remember { mutableStateOf(false) }
-    var revealedSide by remember { mutableStateOf<SwipeDirection?>(null) }
-
     BoxWithConstraints(modifier = modifier) {
-        // Calculate maxDragDistance as a percentage of screen width based on threshold
-        // For example: if threshold is 0.3 (30%), max drag distance is 30% of screen width
+        // Calculate maxDragDistance as a percentage of screen width based on threshold.
+        // For example: if threshold is 0.3 (30%), max drag distance is 30% of screen width.
         // This creates an intuitive 1:1 relationship where the threshold directly determines
-        // both the trigger point and the maximum drag distance
-        val maxDragDistancePx = constraints.maxWidth * threshold
-
-        // Helper function to notify about swipe progress
-        fun notifySwipeProgress() {
-            onSwipeProgress?.let { callback ->
-                val progress = (abs(offsetX.value) / maxDragDistancePx).coerceIn(0f, 1f)
-                val swipeDirection = when {
-                    offsetX.value > 0 -> SwipeDirection.RIGHT
-                    offsetX.value < 0 -> SwipeDirection.LEFT
-                    else -> null // No swipe
-                }
-                callback(progress, swipeDirection)
-            }
-        }
-
-        // Enhanced animate function that notifies progress during animations
-        suspend fun animateToWithProgress(
-            targetValue: Float,
-            animationSpec: AnimationSpec<Float>,
-        ) {
-            offsetX.animateTo(
-                targetValue = targetValue,
-                animationSpec = animationSpec,
-            ) {
-                // Call progress callback during animation
-                notifySwipeProgress()
-            }
-        }
+        // both the trigger point and the maximum drag distance.
+        controller.maxDragDistancePx = constraints.maxWidth * threshold
+        val maxDragDistancePx = controller.maxDragDistancePx
 
         Box(modifier = Modifier) {
             // Background layer - Always visible behind the content
             Box(modifier = Modifier.matchParentSize()) {
                 // Left actions background (shows when swiping RIGHT, revealing left actions)
-                if (finalLeftActions.isNotEmpty() && (direction == SwipeDirection.LEFT || direction == SwipeDirection.BOTH) && (offsetX.value > 0 || (isRevealed && revealedSide == SwipeDirection.LEFT))) {
-                    val progress = (abs(offsetX.value) / maxDragDistancePx).coerceIn(0f, 1f)
+                if (controller.finalLeftActions.isNotEmpty() && (direction == SwipeDirection.LEFT || direction == SwipeDirection.BOTH) && (controller.offsetX.value > 0 || (controller.isRevealed && controller.swipeDirection == SwipeDirection.LEFT))) {
+                    val progress = (abs(controller.offsetX.value) / maxDragDistancePx).coerceIn(0f, 1f)
                     when (behavior) {
                         SwipeBehavior.DISMISS -> {
                             // Single action for dismiss behavior
-                            finalLeftActions.firstOrNull()?.let { action ->
+                            controller.finalLeftActions.firstOrNull()?.let { action ->
                                 DismissActionContent(
                                     action = action,
                                     progress = progress,
@@ -204,27 +162,28 @@ fun Swipeable(
                         SwipeBehavior.REVEAL -> {
                             // Multiple actions for reveal behavior
                             RevealActionsContent(
-                                actions = finalLeftActions,
+                                actions = controller.finalLeftActions,
                                 progress = progress,
                                 alignment = Alignment.CenterStart,
                                 shape = shape,
-                                isRevealed = isRevealed && revealedSide == SwipeDirection.LEFT,
+                                isRevealed = controller.isRevealed && controller.swipeDirection == SwipeDirection.LEFT,
                                 customSpacing = revealActionsSpacing,
                                 animationConfig = actionAnimation,
                                 horizontalPadding = revelActionsHorizontalPadding,
-                                background = leftBackground
+                                background = leftBackground,
+                                onClose = controller::closeReveal,
                             )
                         }
                     }
                 }
 
                 // Right actions background (shows when swiping LEFT, revealing right actions)
-                if (finalRightActions.isNotEmpty() && (direction == SwipeDirection.RIGHT || direction == SwipeDirection.BOTH) && (offsetX.value < 0 || (isRevealed && revealedSide == SwipeDirection.RIGHT))) {
-                    val progress = (abs(offsetX.value) / maxDragDistancePx).coerceIn(0f, 1f)
+                if (controller.finalRightActions.isNotEmpty() && (direction == SwipeDirection.RIGHT || direction == SwipeDirection.BOTH) && (controller.offsetX.value < 0 || (controller.isRevealed && controller.swipeDirection == SwipeDirection.RIGHT))) {
+                    val progress = (abs(controller.offsetX.value) / maxDragDistancePx).coerceIn(0f, 1f)
                     when (behavior) {
                         SwipeBehavior.DISMISS -> {
                             // Single action for dismiss behavior
-                            finalRightActions.firstOrNull()?.let { action ->
+                            controller.finalRightActions.firstOrNull()?.let { action ->
                                 DismissActionContent(
                                     action = action,
                                     progress = progress,
@@ -240,15 +199,16 @@ fun Swipeable(
                         SwipeBehavior.REVEAL -> {
                             // Multiple actions for reveal behavior
                             RevealActionsContent(
-                                actions = finalRightActions,
+                                actions = controller.finalRightActions,
                                 progress = progress,
                                 alignment = Alignment.CenterEnd,
                                 shape = shape,
-                                isRevealed = isRevealed && revealedSide == SwipeDirection.RIGHT,
+                                isRevealed = controller.isRevealed && controller.swipeDirection == SwipeDirection.RIGHT,
                                 customSpacing = revealActionsSpacing,
                                 animationConfig = actionAnimation,
                                 horizontalPadding = revelActionsHorizontalPadding,
-                                background = rightBackground
+                                background = rightBackground,
+                                onClose = controller::closeReveal,
                             )
                         }
                     }
@@ -258,17 +218,15 @@ fun Swipeable(
             // Foreground content layer - Swipeable
             Box(
                 modifier = Modifier
-                    .offset { IntOffset(offsetX.value.roundToInt(), 0) }
-                    .pointerInput(Unit) {
+                    .offset { IntOffset(controller.offsetX.value.roundToInt(), 0) }
+                    .pointerInput(controller.isRevealed) {
                         detectHorizontalDragGestures(
                             onDragEnd = {
                                 // Reset haptic feedback state when drag ends
-                                thresholdHapticTriggered = false
-                                lastHapticProgress = 0f
-                                progressMilestones.clear()
-                                
+                                controller.resetHapticState()
+
                                 coroutineScope.launch {
-                                    val currentOffset = offsetX.value
+                                    val currentOffset = controller.offsetX.value
 
                                     // Calculate trigger threshold as percentage of max drag distance
                                     // This works for both DISMISS and REVEAL behaviors
@@ -279,59 +237,42 @@ fun Swipeable(
                                             // Traditional dismiss behavior - trigger action and animate back
                                             when {
                                                 // Left swipe (negative offset, revealing right action)
-                                                currentOffset < -triggerThreshold && finalRightActions.isNotEmpty() -> {
-                                                    finalRightActions.firstOrNull()?.onAction()
-                                                    actionTriggered = true
+                                                currentOffset < -triggerThreshold && controller.finalRightActions.isNotEmpty() -> {
+                                                    controller.finalRightActions.firstOrNull()?.onAction()
                                                 }
 
                                                 // Right swipe (positive offset, revealing left action)
-                                                currentOffset > triggerThreshold && finalLeftActions.isNotEmpty() -> {
-                                                    finalLeftActions.firstOrNull()?.onAction()
-                                                    actionTriggered = true
+                                                currentOffset > triggerThreshold && controller.finalLeftActions.isNotEmpty() -> {
+                                                    controller.finalLeftActions.firstOrNull()?.onAction()
                                                 }
                                             }
 
                                             // Always animate back to center in dismiss mode
-                                            animateToWithProgress(
-                                                targetValue = 0f,
-                                                animationSpec = animationSpec
-                                            )
-                                            actionTriggered = false
+                                            controller.animateToWithProgress(targetValue = 0f)
                                         }
 
                                         SwipeBehavior.REVEAL -> {
                                             // Reveal behavior - stay open if threshold reached, otherwise snap back
                                             when {
                                                 // Left swipe (negative offset, revealing right actions)
-                                                currentOffset < -triggerThreshold && finalRightActions.isNotEmpty() -> {
-
-                                                    isRevealed = true
-                                                    revealedSide = SwipeDirection.RIGHT
-                                                    animateToWithProgress(
-                                                        targetValue = -maxDragDistancePx,
-                                                        animationSpec = animationSpec
-                                                    )
+                                                currentOffset < -triggerThreshold && controller.finalRightActions.isNotEmpty() -> {
+                                                    controller.isRevealed = true
+                                                    controller.swipeDirection = SwipeDirection.RIGHT
+                                                    controller.animateToWithProgress(targetValue = -maxDragDistancePx)
                                                 }
 
                                                 // Right swipe (positive offset, revealing left actions)
-                                                currentOffset > triggerThreshold && finalLeftActions.isNotEmpty() -> {
-
-                                                    isRevealed = true
-                                                    revealedSide = SwipeDirection.LEFT
-                                                    animateToWithProgress(
-                                                        targetValue = maxDragDistancePx,
-                                                        animationSpec = animationSpec
-                                                    )
+                                                currentOffset > triggerThreshold && controller.finalLeftActions.isNotEmpty() -> {
+                                                    controller.isRevealed = true
+                                                    controller.swipeDirection = SwipeDirection.LEFT
+                                                    controller.animateToWithProgress(targetValue = maxDragDistancePx)
                                                 }
 
                                                 else -> {
                                                     // Snap back to center if threshold not reached
-                                                    isRevealed = false
-                                                    revealedSide = null
-                                                    animateToWithProgress(
-                                                        targetValue = 0f,
-                                                        animationSpec = animationSpec
-                                                    )
+                                                    controller.isRevealed = false
+                                                    controller.swipeDirection = null
+                                                    controller.animateToWithProgress(targetValue = 0f)
                                                 }
                                             }
                                         }
@@ -340,7 +281,7 @@ fun Swipeable(
                             }
                         ) { _, dragAmount ->
                             coroutineScope.launch {
-                                val newOffset = (offsetX.value + dragAmount).coerceIn(
+                                val newOffset = (controller.offsetX.value + dragAmount).coerceIn(
                                     -maxDragDistancePx,
                                     maxDragDistancePx
                                 )
@@ -349,58 +290,58 @@ fun Swipeable(
                                 when (direction) {
                                     SwipeDirection.LEFT -> {
                                         if (newOffset >= 0) {
-                                            offsetX.snapTo(newOffset)
+                                            controller.offsetX.snapTo(newOffset)
                                         }
                                     }
 
                                     SwipeDirection.RIGHT -> {
                                         if (newOffset <= 0) {
-                                            offsetX.snapTo(newOffset)
+                                            controller.offsetX.snapTo(newOffset)
                                         }
                                     }
 
                                     SwipeDirection.BOTH -> {
-                                        offsetX.snapTo(newOffset)
+                                        controller.offsetX.snapTo(newOffset)
                                     }
                                 }
 
                                 // Trigger haptic feedback based on configuration
                                 // Determine which haptic config to use based on swipe direction
                                 val activeHapticConfig = when {
-                                    offsetX.value > 0 -> leftHapticFeedbackConfig ?: hapticFeedbackConfig
-                                    offsetX.value < 0 -> rightHapticFeedbackConfig ?: hapticFeedbackConfig
+                                    controller.offsetX.value > 0 -> leftHapticFeedbackConfig ?: hapticFeedbackConfig
+                                    controller.offsetX.value < 0 -> rightHapticFeedbackConfig ?: hapticFeedbackConfig
                                     else -> hapticFeedbackConfig
                                 }
-                                
+
                                 if (activeHapticConfig.enabled) {
                                     // Verify there are actions available for the swipe direction
                                     val hasActions = when {
-                                        offsetX.value > 0 -> finalLeftActions.isNotEmpty()
-                                        offsetX.value < 0 -> finalRightActions.isNotEmpty()
+                                        controller.offsetX.value > 0 -> controller.finalLeftActions.isNotEmpty()
+                                        controller.offsetX.value < 0 -> controller.finalRightActions.isNotEmpty()
                                         else -> false
                                     }
-                                    
+
                                     if (hasActions) {
-                                        val currentProgress = (abs(offsetX.value) / maxDragDistancePx).coerceIn(0f, 1f)
-                                        
+                                        val currentProgress = (abs(controller.offsetX.value) / maxDragDistancePx).coerceIn(0f, 1f)
+
                                         when (activeHapticConfig.mode) {
                                             HapticFeedbackMode.THRESHOLD_ONCE -> {
                                                 // Trigger once when threshold is reached
-                                                if (!thresholdHapticTriggered && currentProgress >= threshold) {
+                                                if (!controller.thresholdHapticTriggered && currentProgress >= threshold) {
                                                     hapticFeedback.performHapticFeedback(activeHapticConfig.intensity)
-                                                    thresholdHapticTriggered = true
+                                                    controller.thresholdHapticTriggered = true
                                                 }
                                             }
-                                            
+
                                             HapticFeedbackMode.CONTINUOUS -> {
                                                 // Trigger continuously while swiping (throttled by progress change)
                                                 // Only trigger if progress changed by at least 5% to avoid overwhelming
-                                                if (abs(currentProgress - lastHapticProgress) >= 0.05f && currentProgress > 0f) {
+                                                if (abs(currentProgress - controller.lastHapticProgress) >= 0.05f && currentProgress > 0f) {
                                                     hapticFeedback.performHapticFeedback(activeHapticConfig.intensity)
-                                                    lastHapticProgress = currentProgress
+                                                    controller.lastHapticProgress = currentProgress
                                                 }
                                             }
-                                            
+
                                             HapticFeedbackMode.PROGRESS_STEPS -> {
                                                 // Trigger at 25%, 50%, 75%, and 100% of threshold
                                                 val milestone = when {
@@ -410,10 +351,10 @@ fun Swipeable(
                                                     currentProgress >= threshold * 0.25f -> 25
                                                     else -> 0
                                                 }
-                                                
-                                                if (milestone > 0 && !progressMilestones.contains(milestone)) {
+
+                                                if (milestone > 0 && !controller.progressMilestones.contains(milestone)) {
                                                     hapticFeedback.performHapticFeedback(activeHapticConfig.intensity)
-                                                    progressMilestones.add(milestone)
+                                                    controller.progressMilestones.add(milestone)
                                                 }
                                             }
                                         }
@@ -421,34 +362,29 @@ fun Swipeable(
                                 }
 
                                 // Notify about swipe progress for custom animations
-                                notifySwipeProgress()
+                                controller.notifySwipeProgress()
                             }
                         }
                     }
-                    .then(
-                        if (behavior == SwipeBehavior.REVEAL && isRevealed) {
-                            Modifier.clickable {
-                                // Close revealed actions when tapping the content
-                                coroutineScope.launch {
-                                    isRevealed = false
-                                    revealedSide = null
-                                    animateToWithProgress(
-                                        targetValue = 0f,
-                                        animationSpec = animationSpec
-                                    )
-                                }
-                            }
-                        } else Modifier
-                    )
             ) {
                 content()
+
+                // Transparent overlay that intercepts all clicks when reveal is open,
+                // preventing content onClick from firing and closing the panel instead.
+                if (behavior == SwipeBehavior.REVEAL && controller.isRevealed) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clickable { controller.closeReveal() }
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun BoxScope.DismissActionContent(
+internal fun BoxScope.DismissActionContent(
     action: SwipeAction,
     progress: Float,
     alignment: Alignment,
@@ -499,7 +435,7 @@ private fun BoxScope.DismissActionContent(
 }
 
 @Composable
-private fun BoxScope.RevealActionsContent(
+internal fun BoxScope.RevealActionsContent(
     actions: List<SwipeAction>,
     progress: Float,
     alignment: Alignment,
@@ -509,6 +445,7 @@ private fun BoxScope.RevealActionsContent(
     background: SwipeBackground,
     horizontalPadding: Dp,
     animationConfig: ActionAnimationConfig = ActionAnimationConfig.Default,
+    onClose: () -> Unit = {},
 ) {
     val containerAlpha = if (isRevealed) {
         1.0f
@@ -556,6 +493,7 @@ private fun BoxScope.RevealActionsContent(
                         onClick = {
                             if (isRevealed) {
                                 action.onAction()
+                                if (action.autoClose) { onClose() }
                             }
                         }
                     )
@@ -566,7 +504,7 @@ private fun BoxScope.RevealActionsContent(
 }
 
 @Composable
-private fun ActionButton(
+internal fun ActionButton(
     action: SwipeAction,
     progress: Float = 1f,
     isInteractive: Boolean = true,

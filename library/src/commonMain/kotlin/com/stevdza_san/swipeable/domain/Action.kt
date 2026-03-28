@@ -31,9 +31,13 @@ data class ActionCustomization(
  * @param customization Visual appearance and styling options
  * @param onAction Callback triggered when the action is performed
  * @param label Optional accessibility label for the action
+ * @param autoClose Whether to automatically animate the swipe item back to closed position
+ *   after this action is clicked. Only applies in [SwipeBehavior.REVEAL] mode.
+ *   Defaults to true for a cleaner UX (no extra tap required to dismiss).
  */
 data class SwipeAction(
     val customization: ActionCustomization,
     val onAction: () -> Unit,
-    val label: String? = null
+    val label: String? = null,
+    val autoClose: Boolean = true,
 )

@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.stevdza_san"
-version = "1.0.5" // Semantic versioning for better compatibility
+version = "1.0.6"
 
 kotlin {
     jvm("desktop")
@@ -19,7 +19,7 @@ kotlin {
         publishLibraryVariants("release")
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
     listOf(
@@ -68,15 +68,15 @@ kotlin {
 }
 
 android {
-    namespace = "com.stevdza_san"
+    namespace = "com.stevdza_san.swipeablekmp"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

@@ -53,13 +53,13 @@ import com.stevdza_san.swipeable.domain.SwipeAction
 import com.stevdza_san.swipeable.domain.SwipeBackground
 import com.stevdza_san.swipeable.domain.SwipeBehavior
 import com.stevdza_san.swipeable.domain.SwipeDirection
-import swipeablekmp.composeapp.generated.resources.Res
-import swipeablekmp.composeapp.generated.resources.archive
-import swipeablekmp.composeapp.generated.resources.check
-import swipeablekmp.composeapp.generated.resources.delete
-import swipeablekmp.composeapp.generated.resources.edit
-import swipeablekmp.composeapp.generated.resources.heart
-import swipeablekmp.composeapp.generated.resources.share
+import swipeablekmp.shared.generated.resources.Res
+import swipeablekmp.shared.generated.resources.archive
+import swipeablekmp.shared.generated.resources.check
+import swipeablekmp.shared.generated.resources.delete
+import swipeablekmp.shared.generated.resources.edit
+import swipeablekmp.shared.generated.resources.heart
+import swipeablekmp.shared.generated.resources.share
 
 
 @Composable

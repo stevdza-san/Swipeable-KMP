@@ -1,13 +1,13 @@
 [versions]
-agp = "8.13.2"
+agp = "9.2.1"
 android-compileSdk = "37"
 android-minSdk = "24"
 #noinspection EditedTargetSdkVersion
 android-targetSdk = "37"
 androidx-activity = "1.13.0"
 androidx-lifecycle = "2.10.0"
-compose-multiplatform = "1.10.3"
-kotlin = "2.3.21"
+compose-multiplatform = "1.11.1"
+kotlin = "2.4.0"
 mavenPublish = "0.36.0"
 material3 = "1.10.0-alpha05"
 
@@ -25,7 +25,7 @@ compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-previ
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidKmpLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

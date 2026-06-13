@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.stevdza_san.swipeable.domain.ActionAnimationConfig
 import com.stevdza_san.swipeable.domain.HapticFeedbackConfig
 import com.stevdza_san.swipeable.domain.HapticFeedbackMode
+import com.stevdza_san.swipeable.domain.IconSource
 import com.stevdza_san.swipeable.domain.SwipeAction
 import com.stevdza_san.swipeable.domain.SwipeBackground
 import com.stevdza_san.swipeable.domain.SwipeBehavior
@@ -547,11 +548,25 @@ internal fun ActionButton(
             ),
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            modifier = Modifier.size(action.customization.iconSize),
-            painter = painterResource(action.customization.icon),
-            contentDescription = action.label,
-            tint = action.customization.iconColor
-        )
+        when (val icon = action.customization.icon) {
+            is IconSource.Vector -> Icon(
+                imageVector = icon.imageVector,
+                modifier = Modifier.size(action.customization.iconSize),
+                contentDescription = action.label,
+                tint = action.customization.iconColor,
+            )
+            is IconSource.Bitmap -> Icon(
+                bitmap = icon.imageBitmap,
+                modifier = Modifier.size(action.customization.iconSize),
+                contentDescription = action.label,
+                tint = action.customization.iconColor,
+            )
+            is IconSource.Resource -> Icon(
+                painter = painterResource(icon.resource),
+                modifier = Modifier.size(action.customization.iconSize),
+                contentDescription = action.label,
+                tint = action.customization.iconColor,
+            )
+        }
     }
 }

@@ -60,7 +60,7 @@
 Add to your `commonMain` dependencies:
 
 ```kotlin
-implementation("com.stevdza-san:swipeable-kmp:1.0.6")
+implementation("com.stevdza-san:swipeable-kmp:1.0.7")
 ```
 
 #### Option 2: Version Catalog (Recommended)
@@ -68,7 +68,7 @@ Add to your `libs.versions.toml`:
 
 ```toml
 [versions]
-swipeableKmp = "1.0.6"
+swipeableKmp = "1.0.7"
 
 [libraries]
 swipeable-kmp = { module = "com.stevdza-san:swipeable-kmp", version.ref = "swipeableKmp" }
